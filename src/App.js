@@ -1,38 +1,66 @@
 import React from "react";
 import { render } from "react-dom";
-import { Pet } from "./Pet";
+import pf from "petfinder-client"; // for learning only
+import Pet from "./Pet";
+
+const petfinder = pf({
+  key: process.env.API_KEY,
+  secret: process.env.API_SECRET
+});
 
 class App extends React.Component {
-  // return React.createElement("div", {}, [
-  //   React.createElement("h1", {}, "Adopt me!"),
-  //   React.createElement(Pet, {
-  //     name: "Luna",
-  //     animal: "dog",
-  //     breed: "Havanese"
-  //   }),
-  //   React.createElement(Pet, {
-  //     name: "Pepper",
-  //     animal: "bird",
-  //     breed: "Cockatiel"
-  //   }),
-  //   React.createElement(Pet, {
-  //     name: "Doink",
-  //     animal: "cat",
-  //     breed: "Mixed"
-  //   })
-  // ]);
+  constructor(props) {
+    super(props);
+    this.state = {
+      pets: []
+    };
+  }
 
-  handleTitleClick() {
-    alert("you clicked on the title!");
+  componentDidMount() {
+    petfinder.pet
+      .find({ output: "full", location: "Los Angeles, CA" })
+      .then(data => {
+        let pets;
+
+        if (data.petfinder.pets && data.petfinder.pets.pet) {
+          if (Array.isArray(data.petfinder.pets.pet)) {
+            pets = data.petfinder.pets.pet;
+          } else {
+            pets = [data.petfinder.pets.pet];
+          }
+        } else {
+          pets = [];
+        }
+
+        this.setState({ pets });
+      });
   }
 
   render() {
     return (
       <div>
         <h1>Adopt me</h1>
-        <Pet name="Luna" animal="dog" breed="Havanese" />
-        <Pet name="Pepper" animal="bird" breed="Cockatiel" />
-        <Pet name="Doink" animal="cat" breed="Mixed" />
+        <div>
+          {this.state.pets.map(pet => {
+            let breed;
+
+            if (Array.isArray(pet.breeds.breed)) {
+              breed = pet.breeds.breed.join(", ");
+            } else {
+              breed = pet.breeds.breed;
+            }
+            return (
+              <Pet
+                key={pet.id}
+                animal={pet.animal}
+                name={pet.name}
+                breed={breed}
+                meda={pet.media}
+                location={`${pet.contact.city}, ${pet.contact.state}`}
+              />
+            );
+          })}
+        </div>
       </div>
     );
   }
