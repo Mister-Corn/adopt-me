@@ -41,6 +41,7 @@ export class Details extends React.Component {
         navigate("/");
       });
   }
+
   render() {
     if (this.state.loading) {
       return <h1>Loading</h1>;
