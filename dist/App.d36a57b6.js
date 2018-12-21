@@ -27430,65 +27430,12 @@ function (_React$Component) {
   _inherits(SearchParams, _React$Component);
 
   function SearchParams() {
-    var _getPrototypeOf2;
-
-    var _this;
-
-    var _temp;
-
     _classCallCheck(this, SearchParams);
 
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return _possibleConstructorReturn(_this, (_temp = _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(SearchParams)).call.apply(_getPrototypeOf2, [this].concat(args))), _this.state = {
-      location: "Los Angeles, CA",
-      animal: "",
-      breed: "",
-      breeds: []
-    }, _this.handleLocationChange = function (event) {
-      _this.setState({
-        location: event.target.value
-      });
-    }, _this.handleAnimalChange = function (event) {
-      _this.setState({
-        animal: event.target.value,
-        breed: ""
-      }, _this.getBreeds);
-    }, _this.handleBreedChange = function (event) {
-      _this.setState({
-        breed: event.target.value
-      });
-    }, _temp));
+    return _possibleConstructorReturn(this, _getPrototypeOf(SearchParams).apply(this, arguments));
   }
 
   _createClass(SearchParams, [{
-    key: "getBreeds",
-    value: function getBreeds() {
-      var _this2 = this;
-
-      if (this.state.animal) {
-        petfinder.breed.list({
-          animal: this.state.animal
-        }).then(function (data) {
-          if (data.petfinder && data.petfinder.breeds && Array.isArray(data.petfinder.breeds.breed)) {
-            _this2.setState({
-              breeds: data.petfinder.breeds.breed
-            });
-          } else {
-            _this2.setState({
-              breeds: []
-            });
-          }
-        });
-      } else {
-        this.setState({
-          breeds: []
-        });
-      }
-    }
-  }, {
     key: "render",
     value: function render() {
       return _react.default.createElement("div", {
@@ -27535,7 +27482,36 @@ function (_React$Component) {
 
 var _default = SearchParams;
 exports.default = _default;
-},{"react":"../node_modules/react/index.js","petfinder-client":"../node_modules/petfinder-client/index.js"}],"App.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","petfinder-client":"../node_modules/petfinder-client/index.js"}],"SearchContext.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Consumer = exports.Provider = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// The below is just the shape of data
+// Don't worry about method definitions for example
+var SearchContext = _react.default.createContext({
+  location: "Los Angeles, CA",
+  animal: "",
+  breed: "",
+  breeds: [],
+  handleAnimalChange: function handleAnimalChange() {},
+  handleBreedChange: function handleBreedChange() {},
+  handleLocationChange: function handleLocationChange() {},
+  getBreeds: function getBreeds() {}
+});
+
+var Provider = SearchContext.Provider;
+exports.Provider = Provider;
+var Consumer = SearchContext.Consumer;
+exports.Consumer = Consumer;
+},{"react":"../node_modules/react/index.js"}],"App.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -27549,6 +27525,10 @@ var _router = require("@reach/router");
 var _Details = require("./Details");
 
 var _SearchParams = _interopRequireDefault(require("./SearchParams"));
+
+var _petfinderClient = _interopRequireDefault(require("petfinder-client"));
+
+var _SearchContext = require("./SearchContext");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27575,24 +27555,84 @@ var App =
 function (_React$Component) {
   _inherits(App, _React$Component);
 
-  function App() {
+  function App(props) {
+    var _this;
+
     _classCallCheck(this, App);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(App).apply(this, arguments));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(App).call(this, props));
+
+    _this.handleLocationChange = function (event) {
+      _this.setState({
+        location: event.target.value
+      });
+    };
+
+    _this.handleAnimalChange = function (event) {
+      _this.setState({
+        animal: event.target.value,
+        breed: ""
+      }, _this.getBreeds);
+    };
+
+    _this.handleBreedChange = function (event) {
+      _this.setState({
+        breed: event.target.value
+      });
+    };
+
+    _this.state = {
+      location: "Los Angeles, CA",
+      animal: "",
+      breed: "",
+      breeds: [],
+      handleAnimalChange: _this.handleAnimalChange,
+      handleBreedChange: _this.handleBreedChange,
+      handleLocationChange: _this.handleLocationChange,
+      getBreeds: _this.getBreeds
+    };
+    return _this;
   }
 
   _createClass(App, [{
+    key: "getBreeds",
+    value: function getBreeds() {
+      var _this2 = this;
+
+      if (this.state.animal) {
+        petfinder.breed.list({
+          animal: this.state.animal
+        }).then(function (data) {
+          if (data.petfinder && data.petfinder.breeds && Array.isArray(data.petfinder.breeds.breed)) {
+            _this2.setState({
+              breeds: data.petfinder.breeds.breed
+            });
+          } else {
+            _this2.setState({
+              breeds: []
+            });
+          }
+        });
+      } else {
+        this.setState({
+          breeds: []
+        });
+      }
+    }
+  }, {
     key: "render",
     value: function render() {
       return _react.default.createElement("div", null, _react.default.createElement("header", null, _react.default.createElement(_router.Link, {
         to: "/"
-      }, "Adopt me")), _react.default.createElement(_router.Router, null, _react.default.createElement(_Results.Results, {
+      }, "Adopt me")), _react.default.createElement(_SearchContext.Provider, {
+        value: this.state
+      }, _react.default.createElement(_router.Router, null, _react.default.createElement(_Results.Results, {
         path: "/"
       }), _react.default.createElement(_Details.Details, {
         path: "/details/:id"
       }), _react.default.createElement(_SearchParams.default, {
         path: "/search-params"
-      })));
+      }))));
     }
   }]);
 
@@ -27600,7 +27640,7 @@ function (_React$Component) {
 }(_react.default.Component);
 
 (0, _reactDom.render)(_react.default.createElement(App, null), document.getElementById("root")); // `createElement` can handle a string, or actual components you wrote
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./Results":"Results.js","@reach/router":"../node_modules/@reach/router/es/index.js","./Details":"Details.js","./SearchParams":"SearchParams.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./Results":"Results.js","@reach/router":"../node_modules/@reach/router/es/index.js","./Details":"Details.js","./SearchParams":"SearchParams.js","petfinder-client":"../node_modules/petfinder-client/index.js","./SearchContext":"SearchContext.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -27627,7 +27667,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53952" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55261" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
