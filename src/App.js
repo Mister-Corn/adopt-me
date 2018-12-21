@@ -1,11 +1,16 @@
 import React from "react";
 import { render } from "react-dom";
-import { Results } from "./Results";
+import Results from "./Results";
 import { Router, Link } from "@reach/router";
 import { Details } from "./Details";
 import SearchParams from "./SearchParams";
 import pf from "petfinder-client";
 import { Provider } from "./SearchContext";
+
+const petfinder = pf({
+  key: process.env.API_KEY,
+  secret: process.env.API_SECRET
+});
 
 class App extends React.Component {
   constructor(props) {
@@ -67,6 +72,11 @@ class App extends React.Component {
       <div>
         <header>
           <Link to="/">Adopt me</Link>
+          <Link to="/search-params">
+            <span aria-label="search" role="img">
+              🔎
+            </span>
+          </Link>
         </header>
         <Provider value={this.state}>
           <Router>
