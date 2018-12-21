@@ -27600,7 +27600,7 @@ function (_React$Component) {
     key: "render",
     value: function render() {
       if (this.state.loading) {
-        return _react.default.createElement("h1", null, "Loading");
+        return _react.default.createElement("h1", null, "Loading!");
       }
 
       var _this$state = this.state,
@@ -27863,7 +27863,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64863" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49969" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
